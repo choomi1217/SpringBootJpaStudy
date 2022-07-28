@@ -41,13 +41,13 @@
       </ul>
     </div>
   </nav>
+
   <div class="container">
     <div class="py-5 text-center">
       <h2>계정 만들기</h2>
     </div>
     <div class="row justify-content-center">
-      <form class="needs-validation col-sm-6" action="#"
-            th:action="@{/sign-up}" th:object="${signUpForm}" method="post" novalidate>
+      <form class="needs-validation col-sm-6" th:action="@{/sign-up}" th:object="${signUpForm}" method="post" novalidate>
         <div class="form-group">
           <label for="nickname">닉네임</label>
           <input id="nickname" type="text" th:field="*{nickname}" class="form-control"
@@ -82,40 +82,48 @@
         </div>
 
         <div class="form-group">
-          <button class="btn btn-primary btn-block" type="submit" aria-describedby="submitHelp">가입하기</button>
+          <button class="btn btn-primary btn-block" type="submit"
+                  aria-describedby="submitHelp">가입하기</button>
           <small id="submitHelp" class="form-text text-muted">
             <a href="#">약관</a>에 동의하시면 가입하기 버튼을 클릭하세요.
           </small>
         </div>
       </form>
     </div>
-    <div class="row justify-content-center">
-      <img class="mb-2" src="/images/logo_long_kr.jpg" alt="" width="100">
-      <small class="d-block mb-3 text-muted">&copy; 2022</small>
-    </div>
+
+    <!--
+    <footer th:fragment="footer">
+      <div class="row justify-content-center">
+        <img class="mb-2" src="/images/logo_long_kr.jpg" alt="" width="100">
+        <small class="d-block mb-3 text-muted">&copy; 2020</small>
+      </div>
+    </footer>
+    -->
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js" integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js" integrity="sha384-ODmDIVzN+pFdexxHEHFBQH3/9/vQ9uori45z4JjnFsRydbmQbmL5t1tQ0culUzyK" crossorigin="anonymous"></script>
   <script type="application/javascript">
+    (function () {
       'use strict';
 
       window.addEventListener('load', function () {
-        // Fetch all the forms we want to apply custom Bootstrap validate styles to
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
         var forms = document.getElementsByClassName('needs-validation');
 
         // Loop over them and prevent submission
-        Array.prototype.filters.call(forms, function (form){
-          form.addEventListener('submit',function (event){
-            if(form.checkValidity() === false){
+        Array.prototype.filter.call(forms, function (form) {
+          form.addEventListener('submit', function (event) {
+            if (form.checkValidity() === false) {
               event.preventDefault();
               event.stopPropagation();
             }
-            form.classList.add('was-validate')
+            form.classList.add('was-validated')
           }, false)
         })
-      },false)
+      }, false)
+    }())
   </script>
 </body>
 </html>
