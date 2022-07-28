@@ -1,5 +1,6 @@
 package com.studyolle.account;
 
+import com.studyolle.domain.Account;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -70,7 +71,10 @@ public class AccountControllerTest {
         .andExpect(status().is3xxRedirection())
         .andExpect(view().name("redirect:/"));
 
-    assertThat(accountRepository.existsByEmail("whdudal1217@naver.com")).isTrue();
+    Account account = accountRepository.findByEmail("whdudal1217@naver.com");
+
+    assertThat(account).isNotNull();
+    assertThat(account.getPassword()).isNotEqualTo("1234578910");
     then(javaMailSender).should().send(any(SimpleMailMessage.class));
   }
 }
