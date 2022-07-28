@@ -67,7 +67,6 @@ public class AccountControllerTest {
             .param("email","whdudal1217@naver.com")
             .param("password","1234578910")
             .with(csrf()))
-
         .andExpect(status().is3xxRedirection())
         .andExpect(view().name("redirect:/"));
 
