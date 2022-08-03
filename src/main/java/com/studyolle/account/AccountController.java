@@ -75,14 +75,15 @@ public class AccountController {
       return view;
     }
 
-    if(!account.getEmailCheckToken().equals(token)){
+    if(!account.isValidToken(token)){
       model.addAttribute("error","wrong.token");
       return view;
     }
-    account.setEmailVerified(true);
-    account.setJoinedAt(LocalDateTime.now());
+
+    account.completeSignUp();
+
     model.addAttribute("numberOfUser", accountRepository.count());
-    model.addAttribute("nickName", account.getNickname());
+    model.addAttribute("nickname", account.getNickname());
 
     return view;
   }

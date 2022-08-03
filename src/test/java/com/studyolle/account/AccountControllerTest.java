@@ -1,18 +1,16 @@
 package com.studyolle.account;
 
 import com.studyolle.domain.Account;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -24,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
+@Transactional
 @SpringBootTest
 @AutoConfigureMockMvc
 public class AccountControllerTest {
@@ -77,5 +76,38 @@ public class AccountControllerTest {
     assertThat(account.getPassword()).isNotEqualTo("1234578910");
     assertThat(account.getEmailCheckToken()).isNotNull();
     then(javaMailSender).should().send(any(SimpleMailMessage.class));
+  }
+
+  @DisplayName("인증 메일 확인 - 입력값 오류")
+  @Test
+  void checkEmailToken_with_wrong_input() throws Exception {
+    mockMvc.perform(get("/check-email-token")
+            .param("token","it'must be error")
+            .param("email", "email@naver.com"))
+            .andExpect(status().isOk())
+            .andExpect(model().attributeExists("error"))
+            .andExpect(view().name("account/checked-email"));
+  }
+
+  @DisplayName("인증 메일 확인 - 입력값 정상")
+  @Test
+  void checkEmailToken() throws Exception {
+    Account account = Account.builder()
+            .email("whdudal1217@naver.com")
+            .password("123456789")
+            .nickname("oomi")
+            .build();
+
+    Account newAccount = accountRepository.save(account);
+    newAccount.generateEmailCheckToken();
+
+    mockMvc.perform(get("/check-email-token")
+            .param("token",newAccount.getEmailCheckToken())
+            .param("email", newAccount.getEmail()))
+        .andExpect(status().isOk())
+        .andExpect(model().attributeDoesNotExist("error"))
+        .andExpect(model().attributeExists("nickname"))
+        .andExpect(model().attributeExists("numberOfUser"))
+        .andExpect(view().name("account/checked-email"));
   }
 }
