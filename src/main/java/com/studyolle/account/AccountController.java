@@ -1,5 +1,7 @@
 package com.studyolle.account;
 
+import com.studyolle.domain.Account;
+import java.time.LocalDateTime;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +20,7 @@ public class AccountController {
 
   private final SignUpFormValidator signUpFormValidator;
   private final AccountService accountService;
-
+  private final AccountRepository accountRepository;
 
   /**
    * InitBinder("signUpForm") : signUpForm 타입의 요청데이터가 왔을때 아래 메소드를 실행함.
@@ -60,6 +62,29 @@ public class AccountController {
 
     return "redirect:/";
 
+  }
+
+  @GetMapping("/check-email-token")
+  public String checkEmailToken(String token, String email, Model model){
+
+    Account account = accountRepository.findByEmail(email);
+    String view = "account/checked-email";
+
+    if(account == null){
+      model.addAttribute("error","wrong.email");
+      return view;
+    }
+
+    if(!account.getEmailCheckToken().equals(token)){
+      model.addAttribute("error","wrong.token");
+      return view;
+    }
+    account.setEmailVerified(true);
+    account.setJoinedAt(LocalDateTime.now());
+    model.addAttribute("numberOfUser", accountRepository.count());
+    model.addAttribute("nickName", account.getNickname());
+
+    return view;
   }
 
 }
