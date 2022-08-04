@@ -16,6 +16,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
@@ -42,7 +44,8 @@ public class AccountControllerTest {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(view().name("account/sign-up"))
-        .andExpect(model().attributeExists("signUpForm"));
+        .andExpect(model().attributeExists("signUpForm"))
+        .andExpect(unauthenticated());
   }
 
   @DisplayName("회원 가입 처리 - 입력값 오류")
@@ -55,7 +58,8 @@ public class AccountControllerTest {
         .param("password","12345")
         .with(csrf()))
         .andExpect(status().isOk())
-        .andExpect(view().name("account/sign-up"));
+        .andExpect(view().name("account/sign-up"))
+        .andExpect(unauthenticated());
   }
 
   @DisplayName("회원 가입 처리 - 입력값 정상")
@@ -68,7 +72,8 @@ public class AccountControllerTest {
             .param("password","1234578910")
             .with(csrf()))
         .andExpect(status().is3xxRedirection())
-        .andExpect(view().name("redirect:/"));
+        .andExpect(view().name("redirect:/"))
+        .andExpect(authenticated().withUsername("oomi"));
 
     Account account = accountRepository.findByEmail("whdudal1217@naver.com");
 
@@ -86,7 +91,8 @@ public class AccountControllerTest {
             .param("email", "email@naver.com"))
             .andExpect(status().isOk())
             .andExpect(model().attributeExists("error"))
-            .andExpect(view().name("account/checked-email"));
+            .andExpect(view().name("account/checked-email"))
+            .andExpect(unauthenticated());
   }
 
   @DisplayName("인증 메일 확인 - 입력값 정상")
@@ -108,6 +114,7 @@ public class AccountControllerTest {
         .andExpect(model().attributeDoesNotExist("error"))
         .andExpect(model().attributeExists("nickname"))
         .andExpect(model().attributeExists("numberOfUser"))
-        .andExpect(view().name("account/checked-email"));
+        .andExpect(view().name("account/checked-email"))
+        .andExpect(authenticated().withUsername("oomi"));
   }
 }
