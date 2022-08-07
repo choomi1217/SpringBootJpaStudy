@@ -1,0 +1,9 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+interface CurrentUser
+class MainController
+class AccountController
+class AccountService
+
+@enduml
