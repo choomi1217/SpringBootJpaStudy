@@ -32,7 +32,7 @@ public class AccountController {
 
   @GetMapping("/sign-up")
   public String signUpForm(Model model){
-    // model에 attributeName은 생략이 가능 합니다.
+    //model에 attributeName은 생략이 가능 합니다.
     //model.addAttribute("signUpForm",new SignUpForm());
     model.addAttribute(new SignUpForm());
 
@@ -87,6 +87,18 @@ public class AccountController {
     model.addAttribute("nickname", account.getNickname());
 
     return view;
+  }
+
+  @GetMapping("/check-email")
+  public String checkEmailAgain(@CurrentUser Account account, Model model){
+    model.addAttribute("email", account.getEmail());
+    return "/account/check-email";
+  }
+
+  @GetMapping("/resend-confirm-email")
+  public String resendConfirmEmail(@CurrentUser Account account){
+    accountService.sendSignUpConfirmEmail(account);
+    return "redirect:/";
   }
 
 }
