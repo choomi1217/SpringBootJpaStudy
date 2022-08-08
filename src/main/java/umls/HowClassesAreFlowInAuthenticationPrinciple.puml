@@ -1,9 +1,26 @@
 @startuml
 'https://plantuml.com/class-diagram
 
+start
+: GetMapping "/" ;
+if (account != null) then (false)
+: mapping parameter : @CurrentUser Account account;
+else (true)
+endif
+: index.html ;
+: click sign-up button ;
+: GetMapping "/sign-up" ;
+: User send sign-up form data ;
+: ;
+end
+
+/'
+
 interface CurrentUser
 class MainController
 class AccountController
 class AccountService
+'/
+
 
 @enduml
