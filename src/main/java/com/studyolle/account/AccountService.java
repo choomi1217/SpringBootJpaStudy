@@ -58,8 +58,9 @@ public class AccountService {
             ,account.getPassword()
             , List.of(new SimpleGrantedAuthority("ROLE USER"))
         );
+        /*SecurityContext context = SecurityContextHolder.getContext();
+        context.setAuthentication(token);*/
 
-        SecurityContext context = SecurityContextHolder.getContext();
-        context.setAuthentication(token);
+        SecurityContextHolder.getContext().setAuthentication(token);
     }
 }
