@@ -19,7 +19,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/"
             ,"/login"
             ,"/sign-up"
-            ,"/check-email"
             ,"/check-email-token"
             ,"/email-login"
             ,"/check-email-login"
