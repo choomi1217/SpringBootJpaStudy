@@ -2,16 +2,20 @@
 'https://plantuml.com/class-diagram
 
 start
-: GetMapping "/" ;
-if (account != null) then (false)
+: "/" ;
 : mapping parameter : @CurrentUser Account account;
-else (true)
+: index.html;
+if (account == null) then (yes)
+  :"/sign-up";
+  :accountService.processNewAccount(signUpForm);
+  :accountService.login(loginAccount)
+else (no)
+  :"/check-email";
 endif
-: index.html ;
+:Page.onRender();
 : click sign-up button ;
 : GetMapping "/sign-up" ;
 : User send sign-up form data ;
-: ;
 end
 
 /'
