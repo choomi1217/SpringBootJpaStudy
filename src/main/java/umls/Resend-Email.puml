@@ -1,0 +1,20 @@
+@startuml
+'https://plantuml.com/activity-diagram-beta
+
+
+start
+:user : 이메일 인증 버튼 클릭;
+:request : check-email;
+:response : account/check-email.html;
+:user : 이메일 재전송 버튼 클릭;
+:request : resend-confirm-email;
+:method : canSendConfirmEmail();
+if (emailCheckTokenGenerateAt > 현재시간-1) is (yes) then
+  :재전송 가능;
+  :response : /;
+else (no)
+  :재전송 불가능;
+  :response : account/check-email;
+endif
+stop
+@enduml
