@@ -65,9 +65,6 @@ public class AccountService implements UserDetailsService {
             ,account.getPassword()
             , List.of(new SimpleGrantedAuthority("ROLE USER"))
         );
-        /*SecurityContext context = SecurityContextHolder.getContext();
-        context.setAuthentication(token);*/
-
         SecurityContextHolder.getContext().setAuthentication(token);
     }
 
@@ -91,6 +88,11 @@ public class AccountService implements UserDetailsService {
 
     public void updateProfile(Account account, Profile profile) {
         modelMapper.map(profile,account);
+        accountRepository.save(account);
+    }
+
+    public void updatePassword(Account account, String newPassword) {
+        account.setPassword(passwordEncoder.encode(newPassword));
         accountRepository.save(account);
     }
 }
