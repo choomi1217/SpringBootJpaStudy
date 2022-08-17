@@ -28,8 +28,8 @@ public class SettingsController {
     @GetMapping(SETTINGS_PROFILE_URL)
     public String profileUpdate(@CurrentUser Account account, Model model){
         model.addAttribute(account);
-        //model.addAttribute(new Profile(account));
-        model.addAttribute(modelMapper.map(account, Profile.class));
+        model.addAttribute(new Profile(account));
+        //model.addAttribute(modelMapper.map(account, Profile.class));
         return SETTINGS_PROFILE_VIEW;
     }
 
