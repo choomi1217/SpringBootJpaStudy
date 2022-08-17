@@ -26,6 +26,7 @@ public class Profile {
 
     private String profileImage;
 
+    /*
     public Profile(Account account) {
         this.bio = account.getBio();
         this.url = account.getUrl();
@@ -33,5 +34,5 @@ public class Profile {
         this.location = account.getLocation();
         this.profileImage = account.getProfileImage();
     }
-
+    */
 }

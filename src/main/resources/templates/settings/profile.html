@@ -162,7 +162,7 @@
       });
 
       $cutBtn.click(function (){
-        let dataUrl = cropper.getCropperCanvas().toDataURL();
+        let dataUrl = cropper.getCroppedCanvas().toDataURL();
         let newImage = document.createElement("img");
         newImage.id = "cropped-new-profile-image";
         newImage.src = dataUrl;

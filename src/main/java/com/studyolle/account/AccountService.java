@@ -91,7 +91,6 @@ public class AccountService implements UserDetailsService {
 
     public void updateProfile(Account account, Profile profile) {
         modelMapper.map(profile,account);
-        // TODO 프로필 이미지 수정
         accountRepository.save(account);
     }
 }
