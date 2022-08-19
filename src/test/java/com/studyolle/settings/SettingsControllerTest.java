@@ -4,11 +4,13 @@ import com.studyolle.WithAccount;
 import com.studyolle.account.AccountRepository;
 import com.studyolle.domain.Account;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,6 +32,9 @@ public class SettingsControllerTest {
 
     @Autowired
     AccountRepository accountRepository;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @AfterEach
     void afterEach(){
@@ -55,7 +60,7 @@ public class SettingsControllerTest {
         String testBio = "소개를 수정합니다.";
 
         mockMvc.perform(post(SettingsController.SETTINGS_PROFILE_URL)
-            .param("bio",testBio)
+                .param("bio",testBio)
                 .with(csrf()))
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl(SettingsController.SETTINGS_PROFILE_URL))
@@ -70,12 +75,12 @@ public class SettingsControllerTest {
     @WithAccount("ParkChan-ho")
     @DisplayName("프로필 수정하기 - 너무 긴 소개 에러")
     @Test
-    void updateProfile_error() throws Exception{
+    void updateProfile_error() throws Exception {
 
         String testBio = "안녕하세요. 박찬호라고 합니다. 제가 LA에 있을때는 말이죠 정말 제가 꿈에 무대인 메이저리그로 진출해서...";
 
         mockMvc.perform(post(SettingsController.SETTINGS_PROFILE_URL)
-                .param("bio",testBio)
+                .param("bio", testBio)
                 .with(csrf()))
             .andExpect(status().isOk())
             .andExpect(view().name(SettingsController.SETTINGS_PROFILE_VIEW))
@@ -87,4 +92,47 @@ public class SettingsControllerTest {
         assertThat(account.getBio()).isNull();
     }
 
+    @WithAccount("oomi")
+    @DisplayName("비밀번호 수정 폼을 보여줍니다")
+    @Test
+    void updatePasswrodForm() throws Exception {
+
+        mockMvc.perform(get(SettingsController.SETTINGS_PASSWORD_URL))
+            .andExpect(status().isOk())
+            .andExpect(model().attributeExists("account"))
+            .andExpect(view().name(SettingsController.SETTINGS_PASSWORD_VIEW))
+        ;
+    }
+
+    @DisplayName("비밀번호 변경 - 에러")
+    @WithAccount("oomi")
+    @Test
+    void updatePassword_error() throws Exception {
+        mockMvc.perform(post(SettingsController.SETTINGS_PASSWORD_URL)
+                .param("newPassword","121712171217")
+                .param("newPasswordConfirm","00000000")
+                .with(csrf()))
+            .andExpect(status().isOk())
+            .andExpect(view().name(SettingsController.SETTINGS_PASSWORD_VIEW))
+            .andExpect(model().hasErrors())
+            .andExpect(model().attributeExists("account"))
+            .andExpect(model().attributeExists("passwordForm"));
+    }
+
+    @DisplayName("비밀번호 변경 - 성공")
+    @WithAccount("oomi")
+    @Test
+    void updatePassword_success() throws Exception {
+        mockMvc.perform(post(SettingsController.SETTINGS_PASSWORD_URL)
+                .param("newPassword","123456789")
+                .param("newPasswordConfirm","123456789")
+                .with(csrf()))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl(SettingsController.SETTINGS_PASSWORD_URL))
+            .andExpect(flash().attributeExists("message"));
+
+        Account accout = accountRepository.findAllByNickname("oomi");
+        Assertions.assertTrue(passwordEncoder.matches("123456789",accout.getPassword()));
+
+    }
 }
