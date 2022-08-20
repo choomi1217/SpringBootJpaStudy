@@ -35,6 +35,9 @@ public class SettingsController {
     static final String SETTINGS_PASSWORD_VIEW = "settings/password";
     static final String SETTINGS_PASSWORD_URL = "/settings/password";
 
+    static final String SETTINGS_NOTIFICATION_VIEW = "settings/notifications";
+    static final String SETTINGS_NOTIFICATION_URL = "/settings/notifications";
+
     @GetMapping(SETTINGS_PROFILE_URL)
     public String updateProfileForm(@CurrentUser Account account, Model model){
         model.addAttribute(account);
@@ -62,19 +65,42 @@ public class SettingsController {
     }
 
     @PostMapping(SETTINGS_PASSWORD_URL)
-    public String updatePassword(
-        @CurrentUser Account account, @Valid PasswordForm passwordForm
-        , Model model, Errors errors, RedirectAttributes redirectAttributes){
-
-        if(errors.hasErrors()){
+    public String updatePassword(@CurrentUser Account account, @Valid PasswordForm passwordForm, Errors errors,
+        Model model, RedirectAttributes attributes) {
+        if (errors.hasErrors()) {
             model.addAttribute(account);
             return SETTINGS_PASSWORD_VIEW;
         }
 
-        accountService.updatePassword(account, passwordForm.getNewPassword());
-        redirectAttributes.addFlashAttribute("message","비밀번호를 변경했습니다.");
+        System.out.println("Password Error.objectName : " + errors.getObjectName());
 
+        accountService.updatePassword(account, passwordForm.getNewPassword());
+        attributes.addFlashAttribute("message", "패스워드를 변경했습니다.");
         return "redirect:" + SETTINGS_PASSWORD_URL;
     }
 
+
+    @GetMapping(SETTINGS_NOTIFICATION_URL)
+    public String updateNotificationForm(@CurrentUser Account account, Model model){
+        Notifications notifications = new Notifications(account);
+        model.addAttribute(notifications);
+        model.addAttribute(account);
+
+        return SETTINGS_NOTIFICATION_VIEW;
+    }
+
+    @PostMapping(SETTINGS_NOTIFICATION_URL)
+    public String updateNotification(@CurrentUser Account account, @Valid Notifications notifications
+        , Model model, Errors errors, RedirectAttributes redirectAttributes){
+
+        if(errors.hasErrors()){
+            model.addAttribute(account);
+            return SETTINGS_NOTIFICATION_VIEW;
+        }
+
+        accountService.updateNotification(account,notifications);
+        redirectAttributes.addFlashAttribute("message","알림 설정을 변경했습니다.");
+
+        return "redirect:" + SETTINGS_NOTIFICATION_URL;
+    }
 }
