@@ -1,8 +1,8 @@
 package com.studyolle.account;
 
+import com.studyolle.account.form.SignUpForm;
+import com.studyolle.account.validator.SignUpFormValidator;
 import com.studyolle.domain.Account;
-import java.time.LocalDateTime;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
