@@ -148,9 +148,9 @@ public class SettingsController {
         return SETTINGS_TAGS_VIEW;
     }
 
-    @GetMapping(SETTINGS_TAGS_URL + "/add")
+    @PostMapping(SETTINGS_TAGS_URL + "/add")
     @ResponseBody
-    public ResponseEntity addTag(@CurrentUser Account account, @RequestBody TagForm tagForm){
+    public ResponseEntity<?> addTag(@CurrentUser Account account, @RequestBody TagForm tagForm){
         String title = tagForm.getTagTitle();
 
         Tag tag = tagRepository.findByTitle(title).orElseGet(()-> tagRepository.save(Tag.builder()
