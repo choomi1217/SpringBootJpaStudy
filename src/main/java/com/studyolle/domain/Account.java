@@ -1,6 +1,7 @@
 package com.studyolle.domain;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import javax.persistence.Basic;
@@ -57,18 +58,19 @@ public class Account {
 
   private boolean studyCreatedByEmail;
 
-  private boolean studyCreatedByWeb;
+  private boolean studyCreatedByWeb = true;
 
   private boolean studyEnrollmentResultByEmail;
 
-  private boolean studyEnrollmentResultByWeb;
+  private boolean studyEnrollmentResultByWeb = true;
 
   private boolean studyUpdatedByEmail;
 
-  private boolean studyUpdatedByWeb;
+  private boolean studyUpdatedByWeb = true;
 
   @ManyToMany
-  private Set<Tag> tags;
+  private Set<Tag> tags = new HashSet<>();
+
   public void generateEmailCheckToken() {
     this.emailCheckToken = UUID.randomUUID().toString();
     this.emailCheckTokenGeneratedAt = LocalDateTime.now();

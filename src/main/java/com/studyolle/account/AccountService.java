@@ -7,6 +7,7 @@ import com.studyolle.settings.form.Notifications;
 import com.studyolle.settings.form.Profile;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.mail.SimpleMailMessage;
@@ -32,21 +33,14 @@ public class AccountService implements UserDetailsService {
     @Transactional
     public Account processNewAccount(SignUpForm signUpForm) {
         Account newAccount = saveNewAccount(signUpForm);
-        newAccount.generateEmailCheckToken();
         sendSignUpConfirmEmail(newAccount);
         return newAccount;
     }
 
     private Account saveNewAccount(SignUpForm signUpForm) {
-        Account account = Account.builder()
-            .email(signUpForm.getEmail())
-            .nickname(signUpForm.getNickname())
-            .password(passwordEncoder.encode(signUpForm.getPassword()))
-            .studyCreatedByWeb(true)
-            .studyEnrollmentResultByWeb(true)
-            .studyUpdatedByWeb(true)
-            .build();
-
+        signUpForm.setPassword(passwordEncoder.encode(signUpForm.getPassword()));
+        Account account = modelMapper.map(signUpForm, Account.class);
+        account.generateEmailCheckToken();
         return accountRepository.save(account);
     }
 
@@ -73,7 +67,7 @@ public class AccountService implements UserDetailsService {
     public UserDetails loadUserByUsername(String emailOrNickname) throws UsernameNotFoundException {
         Account account = accountRepository.findByEmail(emailOrNickname);
         if (account == null){
-            account = accountRepository.findAllByNickname(emailOrNickname);
+            account = accountRepository.findByNickname(emailOrNickname);
         }
         if(account == null){
             throw new UsernameNotFoundException(emailOrNickname);
@@ -121,4 +115,14 @@ public class AccountService implements UserDetailsService {
         byId.ifPresent(a -> a.getTags().add(tag));
     }
 
+    public Set<Tag> getTag(Account account) {
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        return byId.orElseThrow().getTags();
+    }
+
+
+    public void removeTag(Account account, Tag tag) {
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        byId.ifPresent(a -> a.getTags().remove(tag));
+    }
 }
