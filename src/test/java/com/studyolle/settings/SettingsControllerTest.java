@@ -8,6 +8,7 @@ import com.studyolle.account.AccountService;
 import com.studyolle.domain.Account;
 import com.studyolle.domain.Tag;
 import com.studyolle.domain.Zone;
+import com.studyolle.settings.form.Notifications;
 import com.studyolle.settings.form.TagForm;
 import com.studyolle.settings.form.ZoneForm;
 import com.studyolle.tag.TagRepository;
@@ -26,6 +27,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.studyolle.settings.SettingsController.ACCOUNT;
+import static com.studyolle.settings.SettingsController.NOTIFICATIONS;
 import static com.studyolle.settings.SettingsController.PASSWORD;
 import static com.studyolle.settings.SettingsController.PROFILE;
 import static com.studyolle.settings.SettingsController.ROOT;
@@ -33,6 +36,7 @@ import static com.studyolle.settings.SettingsController.SETTINGS;
 import static com.studyolle.settings.SettingsController.TAGS;
 import static com.studyolle.settings.SettingsController.ZONES;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.not;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -114,6 +118,41 @@ public class SettingsControllerTest {
         assertThat(testBio).isEqualTo(account.getBio());
     }
 
+    @WithAccount("oomi")
+    @DisplayName("닉네임 수정 폼을 보여줍니다.")
+    @Test
+    void updateNicknameForm() throws Exception {
+        mockMvc.perform(get(ROOT + SETTINGS + ACCOUNT))
+            .andExpect(view().name(SETTINGS + ACCOUNT))
+            .andExpect(status().isOk())
+            .andExpect(model().attributeExists("nicknameForm","account"));
+    }
+
+    @WithAccount("oomi")
+    @DisplayName("닉네임 수정 - 에러")
+    @Test
+    void updateNicknameError() throws Exception {
+        mockMvc.perform(post(ROOT + SETTINGS + ACCOUNT)
+                .param("nickname" , "om")
+                .with(csrf()))
+            .andExpect(status().isOk())
+            .andExpect(view().name(SETTINGS + ACCOUNT))
+            .andExpect(model().attributeExists("account","nicknameForm"))
+            .andExpect(model().hasErrors());
+    }
+
+    @WithAccount("oomi")
+    @DisplayName("닉네임 수정 - 성공")
+    @Test
+    void updateNicknameSuccess() throws Exception {
+        mockMvc.perform(post(ROOT + SETTINGS + ACCOUNT)
+                .param("nickname","test")
+                .with(csrf()))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl(SETTINGS + ACCOUNT))
+            .andExpect(model().attributeExists("account","nicknameForm"))
+            .andExpect(flash().attributeExists("message"));
+    }
 
     @WithAccount("ParkChan-ho")
     @DisplayName("프로필 수정하기 - 너무 긴 소개 에러")
@@ -136,7 +175,7 @@ public class SettingsControllerTest {
     }
 
     @WithAccount("oomi")
-    @DisplayName("비밀번호 수정 폼을 보여줍니다")
+    @DisplayName("비밀번호 수정 폼을 보여줍니다.")
     @Test
     void updatePasswrodForm() throws Exception {
 
@@ -176,11 +215,45 @@ public class SettingsControllerTest {
 
         Account accout = accountRepository.findByNickname("oomi");
         assertTrue(passwordEncoder.matches("123456789",accout.getPassword()));
-
     }
 
     @WithAccount("oomi")
-    @DisplayName("태그 수정 폼")
+    @DisplayName("알림 수정 폼을 보여줍니다.")
+    @Test
+    void updateNotificationForm() throws Exception {
+        mockMvc.perform(get(ROOT + SETTINGS + NOTIFICATIONS))
+            .andExpect(view().name(SETTINGS + NOTIFICATIONS))
+            .andExpect(model().attributeExists("account"))
+            .andExpect(model().attributeExists("notifications"));
+    }
+
+    @WithAccount("oomi")
+    @DisplayName("알림 수정 - 성공")
+    @Test
+    void updateNotification_success() throws Exception {
+        mockMvc.perform(post(ROOT + SETTINGS + NOTIFICATIONS)
+            .param("studyCreatedByEmail","false")
+            .param("studyCreatedByWeb","true")
+            .param("studyUpdatedByEmail","false")
+            .param("studyUpdatedByWeb","true")
+            .param("studyEnrollmentResultByEmail","false")
+            .param("studyEnrollmentResultByWeb","true")
+            .with(csrf()))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl(SETTINGS + NOTIFICATIONS))
+            .andExpect(flash().attributeExists("message"));
+
+        Account oomi = accountRepository.findByNickname("oomi");
+        assertFalse(oomi.isStudyCreatedByEmail());
+        assertFalse(oomi.isStudyUpdatedByEmail());
+        assertFalse(oomi.isStudyEnrollmentResultByEmail());
+        assertTrue(oomi.isStudyCreatedByWeb());
+        assertTrue(oomi.isStudyUpdatedByWeb());
+        assertTrue(oomi.isStudyEnrollmentResultByWeb());
+    }
+
+    @WithAccount("oomi")
+    @DisplayName("태그 수정 폼을 보여줍니다.")
     @Test
     void updateTagForm() throws Exception {
         mockMvc.perform(get(ROOT + SETTINGS + TAGS))
@@ -242,7 +315,7 @@ public class SettingsControllerTest {
     }
 
     @WithAccount("oomi")
-    @DisplayName("계정의 지역 정보 수정 폼")
+    @DisplayName("계정의 지역 정보 수정 폼을 보여줍니다.")
     @Test
     void updateZoneForm() throws Exception {
         mockMvc.perform(get(ROOT + SETTINGS + ZONES))
