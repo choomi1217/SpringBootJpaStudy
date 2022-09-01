@@ -37,6 +37,7 @@ import static com.studyolle.settings.SettingsController.TAGS;
 import static com.studyolle.settings.SettingsController.ZONES;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.not;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -93,8 +94,7 @@ public class SettingsControllerTest {
     void updateProfileForm() throws Exception {
         mockMvc.perform(get(ROOT + SETTINGS + PROFILE))
             .andExpect(status().isOk())
-            .andExpect(model().attributeExists("account"))
-            .andExpect(model().attributeExists("profile"))
+            .andExpect(model().attributeExists("account","profile"))
             .andExpect(view().name(SETTINGS + PROFILE));
 
     }
@@ -125,7 +125,7 @@ public class SettingsControllerTest {
         mockMvc.perform(get(ROOT + SETTINGS + ACCOUNT))
             .andExpect(view().name(SETTINGS + ACCOUNT))
             .andExpect(status().isOk())
-            .andExpect(model().attributeExists("nicknameForm","account"));
+            .andExpect(model().attributeExists("account","nicknameForm"));
     }
 
     @WithAccount("oomi")
@@ -145,13 +145,16 @@ public class SettingsControllerTest {
     @DisplayName("닉네임 수정 - 성공")
     @Test
     void updateNicknameSuccess() throws Exception {
+        String testNickname = "test";
         mockMvc.perform(post(ROOT + SETTINGS + ACCOUNT)
-                .param("nickname","test")
+                .param("nickname",testNickname)
                 .with(csrf()))
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl(SETTINGS + ACCOUNT))
-            .andExpect(model().attributeExists("account","nicknameForm"))
             .andExpect(flash().attributeExists("message"));
+
+        String nickname = accountRepository.findByNickname(testNickname).getNickname();
+        assertThat(nickname).isEqualTo(testNickname);
     }
 
     @WithAccount("ParkChan-ho")
@@ -167,8 +170,7 @@ public class SettingsControllerTest {
             .andExpect(status().isOk())
             .andExpect(view().name( SETTINGS + PROFILE))
             .andExpect(model().hasErrors())
-            .andExpect(model().attributeExists("account"))
-            .andExpect(model().attributeExists("profile"))
+            .andExpect(model().attributeExists("account","profile"))
         ;
         Account account = accountRepository.findByNickname("ParkChan-ho");
         assertThat(account.getBio()).isNull();
@@ -197,8 +199,7 @@ public class SettingsControllerTest {
             .andExpect(status().isOk())
             .andExpect(view().name(SETTINGS + PASSWORD))
             .andExpect(model().hasErrors())
-            .andExpect(model().attributeExists("account"))
-            .andExpect(model().attributeExists("passwordForm"));
+            .andExpect(model().attributeExists("account","passwordForm"));
     }
 
     @DisplayName("비밀번호 변경 - 성공")
@@ -223,8 +224,7 @@ public class SettingsControllerTest {
     void updateNotificationForm() throws Exception {
         mockMvc.perform(get(ROOT + SETTINGS + NOTIFICATIONS))
             .andExpect(view().name(SETTINGS + NOTIFICATIONS))
-            .andExpect(model().attributeExists("account"))
-            .andExpect(model().attributeExists("notifications"));
+            .andExpect(model().attributeExists("account","notifications"));
     }
 
     @WithAccount("oomi")
@@ -258,9 +258,7 @@ public class SettingsControllerTest {
     void updateTagForm() throws Exception {
         mockMvc.perform(get(ROOT + SETTINGS + TAGS))
             .andExpect(view().name(SETTINGS + TAGS))
-            .andExpect(model().attributeExists("account"))
-            .andExpect(model().attributeExists("whiteList"))
-            .andExpect(model().attributeExists("tags"));
+            .andExpect(model().attributeExists("account","whiteList","tags"));
     }
 
     @WithAccount("oomi")
@@ -320,9 +318,7 @@ public class SettingsControllerTest {
     void updateZoneForm() throws Exception {
         mockMvc.perform(get(ROOT + SETTINGS + ZONES))
             .andExpect(view().name(SETTINGS + ZONES))
-            .andExpect(model().attributeExists("account"))
-            .andExpect(model().attributeExists("whitelist"))
-            .andExpect(model().attributeExists("zones"));
+            .andExpect(model().attributeExists("account","whitelist","zones"));
     }
 
     @WithAccount("oomi")
