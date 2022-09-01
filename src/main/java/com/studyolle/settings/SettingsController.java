@@ -143,17 +143,13 @@ public class SettingsController {
     }
 
     @PostMapping(ACCOUNT)
-    public String updateAccount(@CurrentUser Account account, @Valid NicknameForm nicknameForm
-        , Errors errors, Model model, RedirectAttributes redirectAttributes) {
-
+    public String updateAccount(@CurrentUser Account account, @Valid NicknameForm nicknameForm, Errors errors, Model model, RedirectAttributes redirectAttributes) {
         if(errors.hasErrors()){
             model.addAttribute(account);
             return SETTINGS + ACCOUNT;
         }
-
         accountService.updateNickname(account,nicknameForm.getNickname());
         redirectAttributes.addFlashAttribute("message", "닉네임을 수정했습니다.");
-
         return "redirect:" + SETTINGS + ACCOUNT;
     }
 
