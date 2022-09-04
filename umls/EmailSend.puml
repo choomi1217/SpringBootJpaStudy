@@ -1,0 +1,26 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class EmailMessage{
+    private String to
+    private String subject
+    private String message
+}
+
+EmailMessage <.. EmailService
+
+interface EmailService{
+  void sendEmail(EmailMessage emailMessage)
+}
+
+EmailService <|.. ConsoleEmailService
+EmailService <|.. HtmlEmailService
+
+class ConsoleEmailService{
+  public void sendEmail
+}
+class HtmlEmailService{
+  public void sendEmail
+}
+
+@enduml
