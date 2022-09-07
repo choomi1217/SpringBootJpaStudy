@@ -1,6 +1,7 @@
 package com.studyolle.study;
 
 import com.studyolle.account.CurrentUser;
+import com.studyolle.account.UserAccount;
 import com.studyolle.domain.Account;
 import com.studyolle.domain.Study;
 import com.studyolle.study.form.StudyForm;
