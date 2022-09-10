@@ -34,12 +34,19 @@ public class StudyController {
         webDataBinder.addValidators(studyFormValidator);
     }
 
+    /*
+    * 스터디 개설 폼
+    * */
     @GetMapping("/new-study")
     public String newStudyForm(@CurrentUser Account account, Model model){
         model.addAttribute(account);
         model.addAttribute(new StudyForm());
         return "study/form";
     }
+
+    /*
+    * 스터디 개설
+    * */
 
     @PostMapping("/new-study")
     public String newStudySubmit(@CurrentUser Account account, @Valid StudyForm studyForm, Errors errors, Model model){
@@ -52,6 +59,9 @@ public class StudyController {
         return "redirect:/study/" + URLEncoder.encode(newStudy.getPath(), StandardCharsets.UTF_8);
     }
 
+    /*
+    * 스터디 조회
+    * */
     @GetMapping("/study/{path}")
     public String viewStudy(@CurrentUser Account account, @PathVariable String path, Model model){
         model.addAttribute(account);
@@ -59,6 +69,9 @@ public class StudyController {
         return "study/view";
     }
 
+    /*
+    * 스터디 멤버 조회
+    * */
     @GetMapping("/study/{path}/members")
     public String viewStudyMember(@CurrentUser Account account, @PathVariable String path, Model model){
         model.addAttribute(account);
