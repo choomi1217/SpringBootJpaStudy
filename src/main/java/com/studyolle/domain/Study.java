@@ -95,4 +95,8 @@ public class Study {
         return this.isPublished() && this.isRecruiting() && !this.members.contains(account) && !this.managers.contains(account);
     }
 
+    public String getImage(){
+        return image != null ? image : "/images/default_banner.png";
+    }
+
 }
