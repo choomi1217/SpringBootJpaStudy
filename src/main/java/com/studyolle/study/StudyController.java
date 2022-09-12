@@ -1,7 +1,6 @@
 package com.studyolle.study;
 
-import com.studyolle.account.CurrentUser;
-import com.studyolle.account.UserAccount;
+import com.studyolle.account.CurrentAccount;
 import com.studyolle.domain.Account;
 import com.studyolle.domain.Study;
 import com.studyolle.study.form.StudyForm;
@@ -38,7 +37,7 @@ public class StudyController {
     * 스터디 개설 폼
     * */
     @GetMapping("/new-study")
-    public String newStudyForm(@CurrentUser Account account, Model model){
+    public String newStudyForm(@CurrentAccount Account account, Model model){
         model.addAttribute(account);
         model.addAttribute(new StudyForm());
         return "study/form";
@@ -49,7 +48,7 @@ public class StudyController {
     * */
 
     @PostMapping("/new-study")
-    public String newStudySubmit(@CurrentUser Account account, @Valid StudyForm studyForm, Errors errors, Model model){
+    public String newStudySubmit(@CurrentAccount Account account, @Valid StudyForm studyForm, Errors errors, Model model){
         if(errors.hasErrors()){
             model.addAttribute(account);
             return "study/form";
@@ -63,7 +62,7 @@ public class StudyController {
     * 스터디 조회
     * */
     @GetMapping("/study/{path}")
-    public String viewStudy(@CurrentUser Account account, @PathVariable String path, Model model){
+    public String viewStudy(@CurrentAccount Account account, @PathVariable String path, Model model){
         model.addAttribute(account);
         model.addAttribute(studyRepository.findByPath(path));
         return "study/view";
@@ -73,7 +72,7 @@ public class StudyController {
     * 스터디 멤버 조회
     * */
     @GetMapping("/study/{path}/members")
-    public String viewStudyMember(@CurrentUser Account account, @PathVariable String path, Model model){
+    public String viewStudyMember(@CurrentAccount Account account, @PathVariable String path, Model model){
         model.addAttribute(account);
         model.addAttribute(studyRepository.findByPath(path));
         return "study/members";
