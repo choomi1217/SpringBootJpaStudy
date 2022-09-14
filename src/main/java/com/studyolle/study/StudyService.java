@@ -3,6 +3,8 @@ package com.studyolle.study;
 import com.studyolle.account.UserAccount;
 import com.studyolle.domain.Account;
 import com.studyolle.domain.Study;
+import com.studyolle.domain.Tag;
+import com.studyolle.settings.form.TagForm;
 import com.studyolle.study.form.StudyDescriptionForm;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -55,4 +57,9 @@ public class StudyService {
     public void disableBanner(Study study) {
         study.setUseBanner(false);
     }
+
+
+    public void addTag(Study study, Tag tag) { study.getTags().add(tag); }
+
+    public void removeTag(Study study, Tag tag) { study.getTags().remove(tag); }
 }
