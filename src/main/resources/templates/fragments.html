@@ -271,7 +271,7 @@
 </script>
 
 <div th:fragment="update-tags (baseUrl)">
-  <script src="/node_modules/@yaireo/tagify/dist/tagify.min.js"></script>
+  <script src="/node_modules/@yaireo/tagify/dist/tagify.js"></script>
   <script type="application/javascript" th:inline="javascript">
     $(function() {
       function tagRequest(url, tagTitle) {
@@ -317,7 +317,7 @@
 </div>
 
 <div th:fragment="update-zones (baseUrl)">
-  <script src="/node_modules/@yaireo/tagify/dist/tagify.js"></script>
+  <script src="/node_modules/@yaireo/tagify/dist/tagify.min.js"></script>
   <script type="application/javascript">
     $(function () {
       function tagRequest(url, zoneName) {
@@ -337,22 +337,10 @@
       }
 
       function onAdd(e) {
-        console.log(e.detail);
-        console.log("--------------------");
-        console.log(e.detail.data);
-        console.log("--------------------");
-        console.log(e.detail.data.value);
-        console.log("--------------------");
         tagRequest("/add", e.detail.data.value);
       }
 
       function onRemove(e) {
-        console.log(e.detail);
-        console.log("--------------------");
-        console.log(e.detail.data);
-        console.log("--------------------");
-        console.log(e.detail.data.value);
-        console.log("--------------------");
         tagRequest("/remove", e.detail.data.value);
       }
 
