@@ -13,9 +13,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @Transactional
 @SpringBootTest
@@ -32,16 +37,42 @@ public class StudySettingsControllerTest {
     @DisplayName(" 스터디 설정 화면 조회 - 성공 ")
     @Test
     void viewStudySetting_success() throws Exception {
-        Account newAccount = createNewAccount();
-        Study newStudy = createNewStudy("test-path" , newAccount);
+        Account oomi = accountRepository.findByNickname("oomi");
+        Study newStudy = createNewStudy("test-path" , oomi);
 
         mockMvc.perform(get("/study/" + newStudy.getPath() + "/settings/description"))
+            .andExpect(status().isOk())
+            .andExpect(view().name("study/settings/description"))
+            .andExpect(model().attributeExists("account"))
+            .andExpect(model().attributeExists("study"))
+            .andExpect(model().attributeExists("studyDescriptionForm"));
+    }
+
+    @WithAccount("oomi")
+    @DisplayName(" 스터디 설정 화면 조회 - 실패 ")
+    @Test
+    void viewStudySetting_fail() throws Exception {
+        Account testAccount = createNewAccount();
+        Study testStudy = createNewStudy("test-path", testAccount);
+
+        mockMvc.perform(get("/study/"+ testStudy.getPath() + "/settings/description"))
             .andExpect(status().isForbidden());
     }
 
-    @DisplayName(" 스터디 설정 화면 조회 - 실패 ")
+    @WithAccount("oomi")
+    @DisplayName(" 스터디 설명 수정 - 성공")
     @Test
-    void viewStudySetting_fail() {
+    void updateDescription_success() throws Exception {
+        Account oomi = accountRepository.findByNickname("oomi");
+        Study testStudy = createNewStudy("test-path", oomi);
+        String path = "/study"+testStudy.getPath()+"settings/description";
+        mockMvc.perform(post(path)
+                .param("shortDescription", "shortDescription")
+                .param("fullDescription","fullDescription")
+                .with(csrf()))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl(path))
+            .andExpect(flash().attributeExists("message"));
     }
 
     private Account createNewAccount(){
