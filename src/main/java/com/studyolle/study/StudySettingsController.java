@@ -83,6 +83,7 @@ public class StudySettingsController {
     @GetMapping(BANNER)
     public String updateBannerForm(@CurrentAccount Account account, @PathVariable String path, Model model){
         Study study = studyService.getStudyToUpdate(account, path);
+        model.addAttribute(account);
         model.addAttribute(study);
         return STUDY_SETTINGS_ROOT + BANNER;
     }
@@ -128,7 +129,7 @@ public class StudySettingsController {
 
     @PostMapping(TAGS + "/add")
     public ResponseEntity<Object> addTags(@RequestBody TagForm tagForm, @CurrentAccount Account account, @PathVariable String path){
-        Study study = studyService.getStudyToUpdate(account,path);
+        Study study = studyService.getStudyToUpdateTag(account,path);
         Tag tag = tagService.findOrCreateNew(tagForm.getTagTitle());
         studyService.addTag(study, tag);
         return ResponseEntity.ok().build();
@@ -136,14 +137,18 @@ public class StudySettingsController {
 
     @PostMapping(TAGS + "/remove")
     public ResponseEntity<Object> removeTags(@RequestBody TagForm tagForm, @CurrentAccount Account account, @PathVariable String path){
-        Study study = studyService.getStudyToUpdate(account,path);
+        Study study = studyService.getStudyToUpdateTag(account,path);
         Tag tag = tagRepository.findTagsByTitle(tagForm.getTagTitle());
+        if(tag == null){
+            return ResponseEntity.badRequest().build();
+        }
         studyService.removeTag(study, tag);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping(ZONES)
-    public String zoneUpdateForm(@CurrentAccount Account account, @PathVariable String path, Model model){
+    public String zoneUpdateForm(@CurrentAccount Account account, @PathVariable String path, Model model)
+        throws JsonProcessingException {
         Study study = studyService.getStudyToUpdate(account,path);
 
         List<String> zones = study.getZones().stream().map(Zone::toString)
@@ -151,17 +156,18 @@ public class StudySettingsController {
 
         List<String> allZones = zoneRepository.findAll().stream().map(Zone::toString)
             .collect(Collectors.toList());
+        String whitelist = objectMapper.writeValueAsString(allZones);
 
         model.addAttribute(account);
         model.addAttribute("zones", zones);
         model.addAttribute(study);
-        model.addAttribute("whitelist", allZones);
+        model.addAttribute("whitelist", whitelist);
         return STUDY_SETTINGS_ROOT + ZONES;
     }
 
     @PostMapping(ZONES + "/add")
     public ResponseEntity<Object> addZones(@RequestBody ZoneForm zoneForm, @CurrentAccount Account account , @PathVariable String path){
-        Study study = studyService.getStudyToUpdate(account,path);
+        Study study = studyService.getStudyToUpdateZone(account,path);
         Zone zone = zoneRepository.findByCityAndProvince(zoneForm.getCityName(), zoneForm.getProvinceName());
         studyService.addZone(study, zone);
         return ResponseEntity.ok().build();
