@@ -46,6 +46,7 @@ public class StudySettingsController {
     private final String BANNER = "/banner";
     private final String TAGS = "/tags";
     private final String ZONES = "/zones";
+    private final String STUDY = "/study";
 
     @Autowired StudyService studyService;
     @Autowired ModelMapper modelMapper;
@@ -81,7 +82,7 @@ public class StudySettingsController {
     }
 
     @GetMapping(BANNER)
-    public String updateBannerForm(@CurrentAccount Account account, @PathVariable String path, Model model){
+    public String viewUpdateBanner(@CurrentAccount Account account, @PathVariable String path, Model model){
         Study study = studyService.getStudyToUpdate(account, path);
         model.addAttribute(account);
         model.addAttribute(study);
@@ -111,7 +112,7 @@ public class StudySettingsController {
     }
 
     @GetMapping(TAGS)
-    public String updateTagsForm(@CurrentAccount Account account, @PathVariable String path, Model model)
+    public String viewUpdateTags(@CurrentAccount Account account, @PathVariable String path, Model model)
         throws JsonProcessingException {
         Study study = studyService.getStudyToUpdate(account,path);
 
@@ -147,7 +148,7 @@ public class StudySettingsController {
     }
 
     @GetMapping(ZONES)
-    public String zoneUpdateForm(@CurrentAccount Account account, @PathVariable String path, Model model)
+    public String viewZoneUpdate(@CurrentAccount Account account, @PathVariable String path, Model model)
         throws JsonProcessingException {
         Study study = studyService.getStudyToUpdate(account,path);
 
@@ -180,6 +181,44 @@ public class StudySettingsController {
         studyService.removeZone(study,zone);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping(STUDY)
+    public String viewUpdateStudy(@CurrentAccount Account account, @PathVariable String path, Model model){
+        Study study = studyService.getStudyToUpdate(account, path);
+        model.addAttribute(account);
+        model.addAttribute(study);
+        return STUDY_SETTINGS_ROOT + STUDY;
+    }
+
+    // 스터디공개 /study/publish
+    @PostMapping("/study/publish")
+    public String updateStudyPublish(@CurrentAccount Account account, @PathVariable String path){
+        return "";
+    }
+
+    // 스터디비공개 /study/close
+    @PostMapping("/study/close")
+    public void b(){}
+
+    // 스터디원모집시작 /recruit/start
+    @PostMapping("/recruit/start")
+    public void c(){}
+
+    // 스터디원모집중단 /recruit/stop
+    @PostMapping("/recruit/stop")
+    public void d(){}
+
+    // 스터디경로수정 /study/path
+    @PostMapping("/study/path")
+    public void e(){}
+
+    // 스터디이름수정 /study/title
+    @PostMapping("/study/title")
+    public void f(){}
+
+    // 스터디삭제 /study/remove
+    @PostMapping("/study/remove")
+    public void g(){}
 
     private String getPath(String path){
         String encode = URLEncoder.encode(path, StandardCharsets.UTF_8);
