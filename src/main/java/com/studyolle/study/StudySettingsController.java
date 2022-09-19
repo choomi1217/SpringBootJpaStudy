@@ -14,7 +14,6 @@ import com.studyolle.study.form.StudyDescriptionForm;
 import com.studyolle.tag.TagRepository;
 import com.studyolle.tag.TagService;
 import com.studyolle.zone.ZoneRepository;
-import com.studyolle.zone.ZoneService;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -192,25 +191,50 @@ public class StudySettingsController {
 
     // 스터디공개 /study/publish
     @PostMapping("/study/publish")
-    public String updateStudyPublish(@CurrentAccount Account account, @PathVariable String path){
-        return "";
+    public String publishStudy(@CurrentAccount Account account, @PathVariable String path, RedirectAttributes redirectAttributes){
+        Study study = studyService.getStudyToUpdate(account, path);
+        studyService.publishStudy(study);
+        redirectAttributes.addFlashAttribute("message","스터디를 공개했습니다.");
+        return "redirect:/study/"+ getPath(path) + "/settings/study";
     }
 
     // 스터디비공개 /study/close
     @PostMapping("/study/close")
-    public void b(){}
+    public String closeStudy(@CurrentAccount Account account, @PathVariable String path, RedirectAttributes redirectAttributes){
+        Study study = studyService.getStudyToUpdate(account, path);
+        studyService.closeStudy(study);
+        redirectAttributes.addFlashAttribute("message", "스터디를 비공개했습니다.");
+        return "redirect:/study/"+ getPath(path) + "/settings/study";
+    }
 
     // 스터디원모집시작 /recruit/start
     @PostMapping("/recruit/start")
-    public void c(){}
+    public String startRecruit(@CurrentAccount Account account, @PathVariable String path, RedirectAttributes redirectAttributes){
+        Study study = studyService.getStudyToUpdate(account, path);
+        if(!study.canUpdateRecruiting()){
+            redirectAttributes.addFlashAttribute("message", "1시간 안에 인원 모집 설정을 여러번 변경할 수 없습니다.");
+            return redirectToStudy(path);
+        }
+        studyService.recruitStart(study);
+        redirectAttributes.addFlashAttribute("message","인원 모집을 시작합니다.");
+        return redirectToStudy(path);
+    }
 
     // 스터디원모집중단 /recruit/stop
     @PostMapping("/recruit/stop")
-    public void d(){}
+    public String stopRecruit(@CurrentAccount Account account, @PathVariable String path, RedirectAttributes redirectAttributes){
+        Study study = studyService.getStudyToUpdate(account, path);
+        studyService.recruitStop(study);
+        return redirectToStudy(path);
+    }
 
     // 스터디경로수정 /study/path
     @PostMapping("/study/path")
-    public void e(){}
+    public String updateStudyPath(@CurrentAccount Account account, String newPath ,@PathVariable String path, RedirectAttributes redirectAttributes){
+        Study study = studyService.getStudyToUpdate(account, path);
+        //studyService.updateStudyPath(study, newPath);
+        return redirectToStudy(path);
+    }
 
     // 스터디이름수정 /study/title
     @PostMapping("/study/title")
@@ -222,8 +246,11 @@ public class StudySettingsController {
 
     private String getPath(String path){
         String encode = URLEncoder.encode(path, StandardCharsets.UTF_8);
-        System.out.println("getPath > " + encode);
         return encode;
+    }
+
+    private String redirectToStudy(String path){
+        return "redirect:/study/" + getPath(path) + "/settings/study";
     }
 
 }

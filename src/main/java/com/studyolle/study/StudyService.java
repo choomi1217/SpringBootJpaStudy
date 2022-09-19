@@ -1,11 +1,9 @@
 package com.studyolle.study;
 
-import com.studyolle.account.UserAccount;
 import com.studyolle.domain.Account;
 import com.studyolle.domain.Study;
 import com.studyolle.domain.Tag;
 import com.studyolle.domain.Zone;
-import com.studyolle.settings.form.TagForm;
 import com.studyolle.study.form.StudyDescriptionForm;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -89,4 +87,19 @@ public class StudyService {
         }
     }
 
+    public void publishStudy(Study study) {
+        study.publish();
+    }
+
+    public void closeStudy(Study study) {
+        study.close();
+    }
+
+    public void recruitStart(Study study) {
+        study.recruitStart();
+    }
+
+    public void recruitStop(Study study) {
+        study.recruitStop();
+    }
 }
