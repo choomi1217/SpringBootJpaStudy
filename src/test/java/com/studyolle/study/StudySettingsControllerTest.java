@@ -4,6 +4,8 @@ import com.studyolle.WithAccount;
 import com.studyolle.account.AccountRepository;
 import com.studyolle.domain.Account;
 import com.studyolle.domain.Study;
+import com.studyolle.domain.Tag;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -69,7 +71,7 @@ public class StudySettingsControllerTest {
         Study testStudy = createNewStudy("test-path", oomi);
         String path = "/study/"+testStudy.getPath()+"/settings/description";
 
-        mockMvc.perform(post(path + "description")
+        mockMvc.perform(post(path)
                 .param("shortDescription", "shortDescription")
                 .param("fullDescription","fullDescription")
                 .with(csrf()))
@@ -217,7 +219,21 @@ public class StudySettingsControllerTest {
             .andExpect(status().isForbidden());
     }
 
+    @WithAccount("oomi")
+    @DisplayName(" 스터디 태그 설정 - 성공 ")
+    @Test
+    void updateTags_success() throws Exception {
+        Account oomi = accountRepository.findByNickname("oomi");
+        Study newStudy = createNewStudy("test-path", oomi);
+        String path = "/study/" + newStudy.getPath() + "/settings/tags/add";
 
+        mockMvc.perform(post(path)
+                .param("tagTitle", "test-tag")
+                .with(csrf()))
+            .andExpect(status().isOk())
+            ;
+
+    }
 
     private Account createNewAccount(){
         Account test = new Account();
