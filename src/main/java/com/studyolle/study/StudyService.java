@@ -38,14 +38,21 @@ public class StudyService {
     }
 
     public Study getStudyToUpdateTag(Account account, String path) {
-        Study study = studyRepository.findAccountWithTagsByPath(path);
+        Study study = studyRepository.findStudyWithTagsByPath(path);
         checkIfManager(account,study);
         checkIfExistingStudy(path,study);
         return study;
     }
 
     public Study getStudyToUpdateZone(Account account, String path) {
-        Study study = studyRepository.findAccountWithZonesByPath(path);
+        Study study = studyRepository.findStudyWithZonesByPath(path);
+        checkIfManager(account,study);
+        checkIfExistingStudy(path,study);
+        return study;
+    }
+
+    public Study getStudyToUpdateStatus(Account account, String path) {
+        Study study = studyRepository.findStudyWithManagersByPath(path);
         checkIfManager(account,study);
         checkIfExistingStudy(path,study);
         return study;
@@ -101,5 +108,16 @@ public class StudyService {
 
     public void recruitStop(Study study) {
         study.recruitStop();
+    }
+
+    public void updateStudyPath(Study study, String newPath) {
+        study.setPath(newPath);
+    }
+
+    public boolean isValidPath(String newPath) {
+        if(!newPath.matches("^[ㄱ-ㅎ가-힣a-z0-9_-]{2,20}$")){
+            return false;
+        }
+        return !studyRepository.existsByPath(newPath);
     }
 }
