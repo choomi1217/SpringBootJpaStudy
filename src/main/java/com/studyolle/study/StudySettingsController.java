@@ -246,7 +246,9 @@ public class StudySettingsController {
 
     // 스터디이름수정 /study/title
     @PostMapping("/study/title")
-    public void f(){}
+    public String updateStudy(){
+        return "";
+    }
 
     // 스터디삭제 /study/remove
     @PostMapping("/study/remove")
