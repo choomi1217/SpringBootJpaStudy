@@ -120,4 +120,8 @@ public class StudyService {
         }
         return !studyRepository.existsByPath(newPath);
     }
+
+    public void updateStudyTitle(Study study, String newTitle) {
+        study.setTitle(newTitle);
+    }
 }

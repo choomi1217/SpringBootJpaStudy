@@ -246,8 +246,12 @@ public class StudySettingsController {
 
     // 스터디이름수정 /study/title
     @PostMapping("/study/title")
-    public String updateStudy(){
-        return "";
+    public String updateStudy(@CurrentAccount Account account, String newTitle , @PathVariable String path
+        , Model model, RedirectAttributes redirectAttributes){
+        Study study = studyService.getStudyToUpdateStatus(account, path);
+        studyService.updateStudyTitle(study,newTitle);
+        redirectAttributes.addFlashAttribute("message","스터디 제목을 수정했습니다.");
+        return redirectToStudy(path);
     }
 
     // 스터디삭제 /study/remove
