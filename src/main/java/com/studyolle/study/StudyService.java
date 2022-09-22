@@ -124,4 +124,11 @@ public class StudyService {
     public void updateStudyTitle(Study study, String newTitle) {
         study.setTitle(newTitle);
     }
+
+    public boolean isValidTitle(String newTitle) {
+        if(newTitle.length()<=50){
+            return false;
+        }
+        return true;
+    }
 }
