@@ -249,6 +249,12 @@ public class StudySettingsController {
     public String updateStudy(@CurrentAccount Account account, String newTitle , @PathVariable String path
         , Model model, RedirectAttributes redirectAttributes){
         Study study = studyService.getStudyToUpdateStatus(account, path);
+        if(studyService.isValidTitle(newTitle)){
+            model.addAttribute(account);
+            model.addAttribute(study);
+            model.addAttribute("studyTitleError", "스터디 이름을 다시 입력 해주세요.");
+            return "study/settings/study";
+        }
         studyService.updateStudyTitle(study,newTitle);
         redirectAttributes.addFlashAttribute("message","스터디 제목을 수정했습니다.");
         return redirectToStudy(path);
@@ -256,7 +262,7 @@ public class StudySettingsController {
 
     // 스터디삭제 /study/remove
     @PostMapping("/study/remove")
-    public void g(){}
+    public void remo(){}
 
     private String getPath(String path){
         String encode = URLEncoder.encode(path, StandardCharsets.UTF_8);
