@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -249,7 +250,7 @@ public class StudySettingsController {
     public String updateStudy(@CurrentAccount Account account, String newTitle , @PathVariable String path
         , Model model, RedirectAttributes redirectAttributes){
         Study study = studyService.getStudyToUpdateStatus(account, path);
-        if(studyService.isValidTitle(newTitle)){
+        if(!studyService.isValidTitle(newTitle)){
             model.addAttribute(account);
             model.addAttribute(study);
             model.addAttribute("studyTitleError", "스터디 이름을 다시 입력 해주세요.");
@@ -262,7 +263,11 @@ public class StudySettingsController {
 
     // 스터디삭제 /study/remove
     @PostMapping("/study/remove")
-    public void remo(){}
+    public String remove(@CurrentAccount Account account, @PathVariable String path, Model model){
+        Study study = studyService.getStudyToUpdateStatus(account, path);
+        studyService.removeStudy(study);
+        return "redirec:/";
+    }
 
     private String getPath(String path){
         String encode = URLEncoder.encode(path, StandardCharsets.UTF_8);

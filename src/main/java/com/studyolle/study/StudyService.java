@@ -131,4 +131,12 @@ public class StudyService {
         }
         return true;
     }
+
+    public void removeStudy(Study study) {
+        if(study.isRemovable()){
+            studyRepository.delete(study);
+        }else {
+            throw new IllegalArgumentException("스터디를 삭제할 수 없습니다.");
+        }
+    }
 }
