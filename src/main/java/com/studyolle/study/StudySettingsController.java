@@ -242,7 +242,7 @@ public class StudySettingsController {
         }
         studyService.updateStudyPath(study, newPath);
         redirectAttributes.addFlashAttribute("message", "스터디 경로를 수정했습니다.");
-        return redirectToStudy(path);
+        return redirectToStudy(newPath);
     }
 
     // 스터디이름수정 /study/title
