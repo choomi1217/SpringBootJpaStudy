@@ -1,6 +1,8 @@
 package com.studyolle.domain;
 
 import com.studyolle.account.UserAccount;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -34,6 +36,12 @@ import lombok.Setter;
 @NamedEntityGraph(name = "Study.withZonesAndManagers", attributeNodes = {
     @NamedAttributeNode("zones")
     ,@NamedAttributeNode("managers")
+})
+@NamedEntityGraph(name = "Study.withManagers", attributeNodes = {
+    @NamedAttributeNode("managers")
+})
+@NamedEntityGraph(name = "Study.withMembers", attributeNodes = {
+    @NamedAttributeNode("members")
 })
 @Entity
 @Getter @Setter @EqualsAndHashCode(of = "id")
@@ -148,5 +156,13 @@ public class Study {
 
     public boolean isRemovable() {
         return !this.published;
+    }
+
+    public String getEncodedPath() {
+        return URLEncoder.encode(this.path, StandardCharsets.UTF_8);
+    }
+
+    public void removeMember(Account account) {
+        this.members.remove(account);
     }
 }

@@ -23,8 +23,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RequiredArgsConstructor
 public class StudyController {
 
-    private final StudyService studyService;
     private final ModelMapper modelMapper;
+    private final StudyService studyService;
     private final StudyFormValidator studyFormValidator;
     private final StudyRepository studyRepository;
 
@@ -78,4 +78,24 @@ public class StudyController {
         return "study/members";
     }
 
+    /*
+    * 스터디 멤버 가입
+    * */
+    @PostMapping("/study/{path}/join")
+    public String joinStudy(@CurrentAccount Account account, @PathVariable String path, Model model){
+        Study study = studyRepository.findStudyWithMembersWithPath(path);
+        studyService.addMember(study, account);
+        return "redirect:/study/" + study.getPath() + "/members";
+    }
+
+
+    /*
+     * 스터디 멤버 탈퇴
+     * */
+    @PostMapping("/study/{path}/leave")
+    public String leaveStudy(@CurrentAccount Account account, @PathVariable String path, Model model){
+        Study study = studyService.getStudyToUpdateJoin(path);
+        studyService.removeMember(study, account);
+        return "redirect:/study/" + study.getPath() + "/members";
+    }
 }

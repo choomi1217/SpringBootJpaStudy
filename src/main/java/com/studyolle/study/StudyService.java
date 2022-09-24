@@ -126,10 +126,7 @@ public class StudyService {
     }
 
     public boolean isValidTitle(String newTitle) {
-        if(newTitle.length()<=50){
-            return false;
-        }
-        return true;
+        return newTitle.length() <= 50;
     }
 
     public void removeStudy(Study study) {
@@ -138,5 +135,17 @@ public class StudyService {
         }else {
             throw new IllegalArgumentException("스터디를 삭제할 수 없습니다.");
         }
+    }
+
+    public void addMember(Study study, Account account) {
+        study.addMember(account);
+    }
+
+    public void removeMember(Study study, Account account) {
+        study.removeMember(account);
+    }
+
+    public Study getStudyToUpdateJoin(String path) {
+        return studyRepository.findStudyWithMembersWithPath(path);
     }
 }
