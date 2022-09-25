@@ -145,7 +145,4 @@ public class StudyService {
         study.removeMember(account);
     }
 
-    public Study getStudyToUpdateJoin(String path) {
-        return studyRepository.findStudyWithMembersWithPath(path);
-    }
 }
