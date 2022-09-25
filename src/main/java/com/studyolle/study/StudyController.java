@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class StudyController {
 
     private final ModelMapper modelMapper;
-    private final StudyService studyService;
+    private final StudyService studyService; //UnsatisfiedDependencyException
     private final StudyFormValidator studyFormValidator;
     private final StudyRepository studyRepository;
 
@@ -83,19 +83,24 @@ public class StudyController {
     * */
     @PostMapping("/study/{path}/join")
     public String joinStudy(@CurrentAccount Account account, @PathVariable String path, Model model){
+        /*
         Study study = studyRepository.findStudyWithMembersWithPath(path);
         studyService.addMember(study, account);
         return "redirect:/study/" + study.getPath() + "/members";
+        */
+        return "";
     }
-
 
     /*
      * 스터디 멤버 탈퇴
      * */
     @PostMapping("/study/{path}/leave")
     public String leaveStudy(@CurrentAccount Account account, @PathVariable String path, Model model){
-        Study study = studyService.getStudyToUpdateJoin(path);
+        /*
+        Study study = studyRepository.findStudyWithMembersWithPath(path);
         studyService.removeMember(study, account);
         return "redirect:/study/" + study.getPath() + "/members";
+        */
+        return "";
     }
 }
