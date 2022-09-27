@@ -4,10 +4,8 @@ import com.studyolle.WithAccount;
 import com.studyolle.account.AccountRepository;
 import com.studyolle.domain.Account;
 import com.studyolle.domain.Study;
-import com.studyolle.domain.Tag;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,14 +35,23 @@ public class StudySettingsControllerTest {
     @Autowired StudyRepository studyRepository;
     @Autowired AccountRepository accountRepository;
 
+    private Account oomi;
+    private Study newStudy;
+    private String path;
+
+    @BeforeEach
+    void init(){
+        oomi = accountRepository.findByNickname("oomi");
+        newStudy = createNewStudy("test-path", oomi);
+        path = "/study/" + newStudy.getPath() + "/settings/";
+    }
+
     @WithAccount("oomi")
     @DisplayName(" 스터디 설명 설정 화면 조회 - 성공 ")
     @Test
     void viewStudySetting_success() throws Exception {
-        Account oomi = accountRepository.findByNickname("oomi");
-        Study newStudy = createNewStudy("test-path" , oomi);
-
-        mockMvc.perform(get("/study/" + newStudy.getPath() + "/settings/description"))
+        path = path + "description";
+        mockMvc.perform(get(path))
             .andExpect(status().isOk())
             .andExpect(view().name("study/settings/description"))
             .andExpect(model().attributeExists("account"))
@@ -56,10 +63,11 @@ public class StudySettingsControllerTest {
     @DisplayName(" 스터디 설명 설정 화면 조회 - 실패 ")
     @Test
     void viewStudySetting_fail() throws Exception {
+        path = path + "description";
         Account failAccount = createNewAccount();
         Study failStudy = createNewStudy("test-path", failAccount);
 
-        mockMvc.perform(get("/study/"+ failStudy.getPath() + "/settings/description"))
+        mockMvc.perform(get(path))
             .andExpect(status().isForbidden());
     }
 
@@ -67,10 +75,7 @@ public class StudySettingsControllerTest {
     @DisplayName(" 스터디 설명 수정 - 성공")
     @Test
     void updateDescription_success() throws Exception {
-        Account oomi = accountRepository.findByNickname("oomi");
-        Study testStudy = createNewStudy("test-path", oomi);
-        String path = "/study/"+testStudy.getPath()+"/settings/description";
-
+        path = path + "description";
         mockMvc.perform(post(path)
                 .param("shortDescription", "shortDescription")
                 .param("fullDescription","fullDescription")
@@ -84,10 +89,7 @@ public class StudySettingsControllerTest {
     @DisplayName(" 스터디 설명 수정 - 실패")
     @Test
     void updateDescription_fail() throws Exception {
-        Account oomi = accountRepository.findByNickname("oomi");
-        Study testStudy = createNewStudy("test-path", oomi);
-        String path = "/study/"+testStudy.getPath()+"/settings/description";
-
+        path = path + "description";
         mockMvc.perform(post(path)
                 .param("shortDescription", "shortDescription")
                 .param("fullDescription","") // 실패!
@@ -104,10 +106,7 @@ public class StudySettingsControllerTest {
     @DisplayName(" 스터디 배너 설정 화면 조회 - 성공 ")
     @Test
     void viesBanner_success() throws Exception {
-        Account oomi = accountRepository.findByNickname("oomi");
-        Study testStudy = createNewStudy("test-path", oomi);
-        String path = "/study/"+testStudy.getPath()+"/settings/banner";
-
+        path = path + "banner";
         mockMvc.perform(get(path))
             .andExpect(status().isOk())
             .andExpect(view().name("study/settings/banner"))
@@ -133,10 +132,7 @@ public class StudySettingsControllerTest {
     @DisplayName(" 스터디 배너 설정 - 성공 ")
     @Test
     void updateBanner_success() throws Exception {
-        Account oomi = accountRepository.findByNickname("oomi");
-        Study testStudy = createNewStudy("test-path", oomi);
-        String path = "/study/"+testStudy.getPath()+"/settings/banner";
-
+        path = path + "banner";
         mockMvc.perform(post(path)
                 .param("image","이미지를 수정했습니다")
                 .with(csrf()))
@@ -151,9 +147,9 @@ public class StudySettingsControllerTest {
     void updateBanner_fail() throws Exception {
         Account failAccount = createNewAccount();
         Study failStudy = createNewStudy("test-path", failAccount);
-        String path = "/study/"+failStudy.getPath()+"/settings/banner";
+        String fialPath = "/study/"+failStudy.getPath()+"/settings/banner";
 
-        mockMvc.perform(post(path)
+        mockMvc.perform(post(fialPath)
                 .param("image","image")
                 .with(csrf()))
             .andExpect(status().isForbidden())
@@ -164,11 +160,9 @@ public class StudySettingsControllerTest {
     @DisplayName(" 스터디 배너 사용 설정")
     @Test
     void updateBanner_enable() throws Exception {
-        Account oomi = accountRepository.findByNickname("oomi");
-        Study newStudy = createNewStudy("test-path", oomi);
-        String path = "/study/" + newStudy.getPath() + "/settings/banner/enable";
-
-        mockMvc.perform(post(path).with(csrf()))
+        path = path + "banner/enable";
+        mockMvc.perform(post(path)
+                .with(csrf()))
             .andExpect(status().is3xxRedirection());
 
         Study study = studyRepository.findByPath("test-path");
@@ -179,11 +173,9 @@ public class StudySettingsControllerTest {
     @DisplayName(" 스터디 배너 미사용 설정")
     @Test
     void updateBanner_disable() throws Exception {
-        Account oomi = accountRepository.findByNickname("oomi");
-        Study newStudy = createNewStudy("test-path", oomi);
-        String path = "/study/" + newStudy.getPath() + "/settings/banner/disable";
-
-        mockMvc.perform(post(path).with(csrf()))
+        path = path + "banner/disable";
+        mockMvc.perform(post(path)
+                .with(csrf()))
             .andExpect(status().is3xxRedirection());
 
         Study study = studyRepository.findByPath("test-path");
@@ -194,14 +186,10 @@ public class StudySettingsControllerTest {
     @DisplayName(" 스터디 태그 설정 화면 조회 - 성공 ")
     @Test
     void viewTag_success() throws Exception {
-        Account oomi = accountRepository.findByNickname("oomi");
-        Study newStudy = createNewStudy("test-path", oomi);
-        String path = "/study/" + newStudy.getPath() + "/settings/tags";
-
+        path = path + "tags";
         mockMvc.perform(get(path))
             .andExpect(status().isOk())
             .andExpect(model().attributeExists("study"))
-            //.andExpect(model().attributeExists("tags"))
             .andExpect(model().attributeExists("whitelist"))
             .andExpect(view().name("study/settings/tags"))
         ;
@@ -223,17 +211,29 @@ public class StudySettingsControllerTest {
     @DisplayName(" 스터디 태그 설정 - 성공 ")
     @Test
     void updateTags_success() throws Exception {
-        Account oomi = accountRepository.findByNickname("oomi");
-        Study newStudy = createNewStudy("test-path", oomi);
-        String path = "/study/" + newStudy.getPath() + "/settings/tags/add";
-
+        path = path + "tags/add"; ///study/test-path/settings/tags/add
         mockMvc.perform(post(path)
                 .param("tagTitle", "test-tag")
                 .with(csrf()))
             .andExpect(status().isOk())
             ;
-
     }
+
+    @WithAccount("oomi")
+    @DisplayName(" 활동 지역 설정 화면 조회 - 성공 ")
+    @Test
+    void viewZone_success() throws Exception {
+        path = path + "zones";
+        mockMvc.perform(get(path))
+            .andExpect(status().isOk());
+    }
+
+/*    @WithAccount("oomi")
+    @DisplayName(" 활동 지역 설정 - 성공")
+    @Test
+    void updateZone_success() {
+
+    }*/
 
     private Account createNewAccount(){
         Account test = new Account();
