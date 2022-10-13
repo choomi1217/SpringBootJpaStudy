@@ -120,7 +120,7 @@ public class StudySettingsControllerTest {
     @Test
     void viesBanner_fail() throws Exception {
         Account failAccount = createNewAccount();
-        Study failStudy = createNewStudy("test-path", failAccount);
+        Study failStudy = createNewStudy("test-path-test", failAccount);
         String path = "/study/"+failStudy.getPath()+"/settings/banner";
 
         mockMvc.perform(get(path))
@@ -211,12 +211,21 @@ public class StudySettingsControllerTest {
     @DisplayName(" 스터디 태그 설정 - 성공 ")
     @Test
     void updateTags_success() throws Exception {
-        path = path + "tags/add"; ///study/test-path/settings/tags/add
+        /*path = path + "tags/add";
         mockMvc.perform(post(path)
                 .param("tagTitle", "test-tag")
                 .with(csrf()))
             .andExpect(status().isOk())
-            ;
+            ;*/
+        Account oomi = accountRepository.findByNickname("oomi");
+        Study newStudy = createNewStudy("test-path", oomi);
+        String path = "/study/" + newStudy.getPath() + "/settings/tags/add";
+
+        mockMvc.perform(post(path)
+                .param("tagTitle", "test-tag")
+                .with(csrf()))
+            .andExpect(status().isOk())
+        ;
     }
 
     @WithAccount("oomi")
